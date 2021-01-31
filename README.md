@@ -9,6 +9,8 @@ In this part, we take a look at getting started with Designing the API. We under
 
 Recording of webinar: https://youtu.be/zHfZSRUkDF0?t=785
 
+Slide deck: [Click here](https://github.com/lohithgn/mssgug-webinar/blob/main/presentations/Serverless%20Architecture%20-%20Designing%20the%20API.pdf)
+
 ### **2. Part 2: DevOps for the API**
 You have now finished designing your new API. You have generated the OpenAPI specification for your API. You have created the Azure Function HTTP Trigger based API using Auto Rest command line tool or Visual Studio Code. Now what's the next step ? Implementation of the API or build & deployment pipeline? Should you create your Infrastructure? Should you create your CI Pipeline? Should you create your CD Pipeline? Which way to go? In thispart of the webinar we take a look at DevOps side of the things for your API. We will be looking at Infrastructure as a Code with Pulumi as the Technology stack.  
 
