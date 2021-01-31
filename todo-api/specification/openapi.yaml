@@ -1,0 +1,149 @@
+openapi: '3.0.2'
+info:
+  title: Contoso ToDo API
+  version: '1.0'
+  description: Contoso Employee ToDo management API.
+servers:
+  - url: https://api.server.test/v1
+
+components:
+  schemas:
+    ToDo:
+      type: object
+      properties:
+        Id:
+          type: integer
+        Text:
+          type: string
+        IsCompleted:
+          type: boolean
+          default: false
+        Created:
+          type: string
+          format: date-time
+        Completed:
+          type: string
+          format: date-time
+        User:
+          type: string
+
+tags:
+- name: todo
+  description: Everything about ToDo.
+
+paths:
+  /todos:
+    get:
+      tags:
+        - todo
+      summary: List ToDos.
+      operationId: listTodos
+      description: Get all ToDos for a user
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ToDo'
+    post:
+      summary: Add new ToDo.
+      tags:
+      - todo
+      operationId: createTodo
+      description: Add a new ToDo
+      requestBody:
+        description: ToDo object that needs to be added.
+        content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ToDo'
+      responses:
+        '201':
+          description: Created          
+        '405':
+          description: Invalid input
+          content: {}
+      x-codegen-request-body-name: body
+  '/todos/{todoId}':
+    get:
+      summary: Get a ToDo.
+      tags:
+      - todo
+      operationId: getTodo
+      description: Get an existing ToDo.
+      parameters:
+        - name: todoId
+          in: path
+          description: ID of ToDo to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ToDo'
+        '400':
+          description: Invalid ID supplied
+          content: {}
+        '404':
+          description: ToDo not found
+          content: {}          
+    post:
+      tags:
+      - todo
+      summary: Update a ToDo.
+      operationId: updateTodo
+      description: Update an existing ToDo.
+      parameters:
+        - name: todoId
+          in: path
+          description: ID of ToDo to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: ToDo object that needs to be updated.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ToDo'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Invalid ID supplied
+          content: {}
+        '405':
+          description: Invalid input
+          content: {}
+    delete:
+      tags:
+      - todo
+      summary: Delete a ToDo.
+      operationId: deleteTodo
+      description: Delete an existing ToDo.
+      parameters:
+        - name: todoId
+          in: path
+          description: ID of ToDo to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Invalid ID supplied
+          content: {}
+        '404':
+          description: ToDo not found
+          content: {}
