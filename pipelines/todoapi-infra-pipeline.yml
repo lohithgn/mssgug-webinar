@@ -1,0 +1,55 @@
+name: Infra-$(Date:yyyyMMdd)$(Rev:.r)
+
+trigger:
+  paths:
+    include:
+      - infrastructre/ToDoApiInfra/**
+
+variables:
+- group: Contoso-ToDo-VarGroup
+- name: isMain
+  value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+- name: buildConfiguration
+  value: Release
+  
+stages:
+
+- stage: BuildStage
+  displayName: Build Infra
+  jobs:
+  - job: BuildInfra
+    steps:
+    - task: UseDotNet@2
+      inputs:
+        version: '3.1.x'
+        packageType: runtime
+
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'build'
+        arguments: '--configuration $(buildConfiguration)'
+      displayName: 'dotnet build'
+
+- stage: DeployStage
+  displayName: Deploy Infra
+  dependsOn: BuildStage
+  # condition: and(succeeded(), eq(variables.isMain, true))
+  jobs:
+  - job: DeployInfra
+    steps:
+      - task: UseDotNet@2
+        inputs:
+          version: '3.1.x'
+          packageType: runtime
+
+      - task: Pulumi@1
+        displayName: pulumi preview
+        inputs:
+          azureSubscription: $(AZURE_SUBSCRIPTION)
+          command: 'preview'
+          stack: dev
+          cwd: "infra/"
+          createStack: true
+            
+    
+    
