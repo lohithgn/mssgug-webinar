@@ -6,10 +6,13 @@ trigger:
       - infrastructre/state/**
 
 variables:
-  isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
-  artifactName: InfraState
-  infraScript: infrastructure/state/todoapi-infra-state.ps1
-  azureSubscription: ContosoAzureConnection
+- group: Contoso-ToDo-VarGroup
+- name: isMain
+  value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+- name: artifactName
+  value: InfraState
+- name: infraScript
+  value: infrastructure/state/todoapi-infra-state.ps1
   
 stages:
 
@@ -44,9 +47,10 @@ stages:
       - task: AzureCLI@2
         displayName: Deploying Infra State
         inputs:
-            azureSubscription: $(azureSubscription)
+            azureSubscription: $(AZURE_SUBSCRIPTION)
             scriptType: pscore
             scriptLocation: scriptPath
+            arguments: $(SERVICE_PRINCIPAL_OBJ_ID)
             scriptPath: $(System.ArtifactsDirectory)/$(artifactName)/$(infraScript)
             
     
