@@ -14,9 +14,9 @@ stages:
   jobs:
   - job: BuildInfraState
     steps:
-    - script: dir  
-    # - publish: $(Build.SourcesDirectory)/infrastructure/state/*.ps1
-    #   artifact: $(artifactName)
+    - publish: infrastructure/state/*.ps1
+      displayName: Publish Artifacts
+      artifact: $(artifactName)
 
 - stage: DeployStage
   displayName: Deploy Infra State
@@ -26,4 +26,5 @@ stages:
   - job: DeployInfraState
     steps:
     - download: current
+      displayName: Download Artifacts
       artifact: $(artifactName)
