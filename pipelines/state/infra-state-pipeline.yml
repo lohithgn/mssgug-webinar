@@ -8,6 +8,8 @@ trigger:
 variables:
   isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
   artifactName: InfraState
+  infraScript: infrastructure/state/todoapi-infra-state.ps1
+  azureSubscription: ContosoAzureConnection
   
 stages:
 
@@ -19,7 +21,7 @@ stages:
     - task: CopyFiles@2  
       displayName: Copy Artifacts
       inputs:
-        Contents: infrastructure/state/*.ps1
+        Contents: $(infraScript)
         TargetFolder: $(Build.ArtifactStagingDirectory) 
 
     - task: PublishBuildArtifacts@1
@@ -42,10 +44,10 @@ stages:
       - task: AzureCLI@2
         displayName: Deploying Infra State
         inputs:
-            azureSubscription: ContosoAzureConnection
+            azureSubscription: $(azureSubscription)
             scriptType: pscore
             scriptLocation: scriptPath
-            scriptPath: $(System.ArtifactsDirectory)/$(artifactName)/infrastructure/state/todoapi-infra-state.ps1
+            scriptPath: $(System.ArtifactsDirectory)/$(artifactName)/$(infraScript)
             
     
     
