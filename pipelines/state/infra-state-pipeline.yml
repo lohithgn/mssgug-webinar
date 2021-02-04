@@ -1,0 +1,28 @@
+name: Infra-State-$(Date:yyyyMMdd)$(Rev:.r)
+
+trigger:
+  paths:
+    include:
+      - infrastructre/state/**
+
+variables:
+  isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+  artifactName: InfraState
+stages:
+- stage: BuildStage
+  displayName: Build Infra State
+  jobs:
+  - job: BuildInfraState
+    steps:
+    - publish: $(System.DefaultWorkingDirectory)/infrastructure/state/*.ps1
+      artifact: $(artifactName)
+
+- stage: DeployStage
+  displayName: Deploy Infra State
+  dependsOn: BuildStage    
+  condition: and(succeeded(), eq(variables.isMain, true))
+  jobs:
+  - job: DeployInfraState
+    steps:
+    - download: current
+      artifact: $(artifactName)
