@@ -45,7 +45,16 @@ stages:
         inputs:
           version: '3.1.x'
           packageType: runtime
-
+      
+      - task: AzureCLI@2
+        displayName: Azure CLI
+        inputs:
+          azureSubscription: $(AZURE_SUBSCRIPTION)
+          scriptType: ps
+          scriptLocation: inlineScript
+          inlineScript: |
+            az login    
+          
       - pwsh: |
           Write-Host ("##vso[task.setvariable variable=AZURE_STORAGE_CONTAINER]dev")
 
