@@ -30,10 +30,22 @@ stages:
 - stage: DeployStage
   displayName: Deploy Infra State
   dependsOn: BuildStage    
-  condition: and(succeeded(), eq(variables.isMain, true))
+  # condition: and(succeeded(), eq(variables.isMain, true))
   jobs:
   - job: DeployInfraState
     steps:
-    - download: current
-      displayName: Download Artifacts
-      artifact: $(artifactName)
+      - task: DownloadBuildArtifacts@0
+        displayName: Downloading Artifacts
+        inputs:
+          artifactName: $(artifactName)
+          
+      - task: AzureCLI@2
+        displayName: Deploying Infra State
+        inputs:
+            azureSubscription: ContosoAzureConnection
+            scriptType: pscore
+            scriptLocation: scriptPath
+            scriptPath: $(System.ArtifactsDirectory)/infrastructure/state/todoapi-infra-state.ps1
+            
+    
+    
