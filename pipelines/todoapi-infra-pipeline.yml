@@ -33,17 +33,21 @@ stages:
         arguments: '$(infraFolder) --configuration $(buildConfiguration)'
       displayName: 'dotnet build'
 
-- stage: DeployStage
-  displayName: Deploy Infra
+- stage: DevDeployStage
+  displayName: DEV ENV
   dependsOn: BuildStage
   # condition: and(succeeded(), eq(variables.isMain, true))
   jobs:
-  - job: DeployInfra
+  - job: DevDeployInfra
+    displayName: Deploy to Dev
     steps:
       - task: UseDotNet@2
         inputs:
           version: '3.1.x'
           packageType: runtime
+
+      - pwsh: |
+          Write-Host ("##vso[task.setvariable variable=AZURE_STORAGE_CONTAINER]dev")
 
       - task: Pulumi@1
         displayName: pulumi preview
