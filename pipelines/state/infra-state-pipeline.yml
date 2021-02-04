@@ -8,15 +8,24 @@ trigger:
 variables:
   isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
   artifactName: InfraState
+  
 stages:
+
 - stage: BuildStage
   displayName: Build Infra State
   jobs:
   - job: BuildInfraState
     steps:
-    - publish: infrastructure/state/*.ps1
+    - task: CopyFiles@2  
+      displayName: Copy Artifacts
+      inputs:
+        Contents: infrastructure/state/*.ps1
+        TargetFolder: $(Build.ArtifactStagingDirectory) 
+
+    - task: PublishBuildArtifacts@1
       displayName: Publish Artifacts
-      artifact: $(artifactName)
+      inputs:
+        ArtifactName: $(artifactName)
 
 - stage: DeployStage
   displayName: Deploy Infra State
