@@ -45,7 +45,7 @@ stages:
             azureSubscription: ContosoAzureConnection
             scriptType: pscore
             scriptLocation: scriptPath
-            scriptPath: $(System.ArtifactsDirectory)/infrastructure/state/todoapi-infra-state.ps1
+            scriptPath: $(System.ArtifactsDirectory)/$(artifactName)/infrastructure/state/todoapi-infra-state.ps1
             
     
     
