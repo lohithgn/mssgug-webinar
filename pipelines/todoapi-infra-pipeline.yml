@@ -27,7 +27,7 @@ stages:
     - task: DotNetCoreCLI@2
       inputs:
         command: 'build'
-        arguments: '--configuration $(buildConfiguration)'
+        arguments: 'infrastructre/ToDoApiInfra --configuration $(buildConfiguration)'
       displayName: 'dotnet build'
 
 - stage: DeployStage
@@ -48,7 +48,7 @@ stages:
           azureSubscription: $(AZURE_SUBSCRIPTION)
           command: 'preview'
           stack: dev
-          cwd: "infra/"
+          cwd: "infrastructre/ToDoApiInfra/"
           createStack: true
             
     
