@@ -11,6 +11,8 @@ variables:
   value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
 - name: buildConfiguration
   value: Release
+- name: infraFolder
+  value: infrastructure/ToDoApiInfra
   
 stages:
 
@@ -28,7 +30,7 @@ stages:
       inputs:
         command: 'build'
         workingDirectory: $(Build.SourcesDirectory)
-        arguments: 'infrastructre/ToDoApiInfra --configuration $(buildConfiguration)'
+        arguments: '$(infraFolder) --configuration $(buildConfiguration)'
       displayName: 'dotnet build'
 
 - stage: DeployStage
@@ -49,5 +51,5 @@ stages:
           azureSubscription: $(AZURE_SUBSCRIPTION)
           command: 'preview'
           stack: dev
-          cwd: "$(Build.SourcesDirectory)/infrastructre/ToDoApiInfra/"
+          cwd: "$(Build.SourcesDirectory)/$(infraFolder)/"
           createStack: true
