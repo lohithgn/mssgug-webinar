@@ -1,1 +1,3 @@
 encryptionsalt: v1:DvkOWu8HqTE=:v1:6A+fX1Z4P6b4Xs0I:Q2Gv9yudU3zb56VM3I6zCDF+JNd/Pg==
+config:
+  ToDoApiInfra:env: dev
