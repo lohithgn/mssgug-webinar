@@ -15,7 +15,7 @@ class ToDoApiStack : Stack
         var environment = config.Require("env");
         string appName = "todoapi";
         string resourceGroupName = $"{ResourcePrefixes.ResourceGroup}{appName}-{environment}";
-        string funcStorageName = $"{ResourcePrefixes.Storage}{appName}-{environment}";
+        string funcStorageName = $"{ResourcePrefixes.Storage}{appName}{environment}001";
         string funcAppServicePlanName = $"{ResourcePrefixes.AppServicePlan}{appName}-{environment}";
         string funcAppName = $"{ResourcePrefixes.FunctionApp}{appName}-{environment}";
 
