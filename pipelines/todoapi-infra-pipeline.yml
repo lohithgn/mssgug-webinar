@@ -63,3 +63,13 @@ stages:
           stack: dev
           cwd: "$(Build.SourcesDirectory)/$(infraFolder)/"
           createStack: true
+
+      - task: Pulumi@1
+        displayName: pulumi up
+        inputs:
+          azureSubscription: $(AZURE_SUBSCRIPTION)
+          command: 'up'
+          stack: dev
+          cwd: "$(Build.SourcesDirectory)/$(infraFolder)/"
+          createStack: true
+          args: '--yes'
