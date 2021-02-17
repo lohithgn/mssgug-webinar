@@ -3,7 +3,7 @@ param([Parameter(Mandatory=$true)][string]$servicePrincipalObjId)
 $rgName="rg-todoapi-infra"
 $storageAccountName="sttodoapiinfra001"
 $location="southeast asia"
-$devContainer="dev"
+$infraContainer="pulumi"
 $keyVaultName="kv-todoapi-infra"
 $keyName="pulumi"
 
@@ -19,7 +19,7 @@ Write-Host "`n`t Getting Storage Key"
 $key = az storage account keys list -g $rgName -n $storageAccountName --query '[0].value' 
 
 Write-Host "`n`t Creating Storage Container"
-$null = az storage container create --name $devContainer --account-key $key --account-name $storageAccountName
+$null = az storage container create --name $infraContainer --account-key $key --account-name $storageAccountName
 
 Write-Host "`n`t Creating Key Vault"
 $null = az keyvault create --name $keyVaultName --resource-group $rgName --location $location --enabled-for-template-deployment true --sku "standard"
