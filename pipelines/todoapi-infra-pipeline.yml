@@ -1,0 +1,75 @@
+name: Infra-$(Date:yyyyMMdd)$(Rev:.r)
+
+trigger:
+  paths:
+    include:
+      - infrastructre/ToDoApiInfra/**
+
+variables:
+- group: Contoso-ToDo-VarGroup
+- name: isMain
+  value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+- name: buildConfiguration
+  value: Release
+- name: infraFolder
+  value: infrastructure/ToDoApiInfra
+  
+stages:
+
+- stage: BuildStage
+  displayName: Build Infra
+  jobs:
+  - job: BuildInfra
+    steps:
+    - task: UseDotNet@2
+      inputs:
+        version: '3.1.x'
+        packageType: runtime
+
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'build'
+        workingDirectory: $(Build.SourcesDirectory)
+        arguments: '$(infraFolder) --configuration $(buildConfiguration)'
+      displayName: 'dotnet build'
+
+- stage: DevDeployStage
+  displayName: DEV ENV
+  dependsOn: BuildStage
+  # condition: and(succeeded(), eq(variables.isMain, true))
+  jobs:
+  - job: DevDeployInfra
+    displayName: Deploy to Dev
+    steps:
+      - task: UseDotNet@2
+        inputs:
+          version: '3.1.x'
+          packageType: runtime
+      
+      - task: AzureCLI@2
+        displayName: Azure Login
+        inputs:
+          azureSubscription: $(AZURE_SUBSCRIPTION)
+          scriptType: pscore
+          scriptLocation: inlineScript
+          inlineScript: |
+            az --version
+
+      - task: Pulumi@1
+        displayName: pulumi preview
+        inputs:
+          azureSubscription: $(AZURE_SUBSCRIPTION)
+          command: 'preview'
+          stack: dev
+          cwd: "$(Build.SourcesDirectory)/$(infraFolder)/"
+          createStack: true
+
+      - task: Pulumi@1
+        displayName: pulumi up
+        inputs:
+          azureSubscription: $(AZURE_SUBSCRIPTION)
+          command: 'up'
+          stack: dev
+          cwd: "$(Build.SourcesDirectory)/$(infraFolder)/"
+          createStack: true
+          args: '--yes'

@@ -1,0 +1,3 @@
+name: ToDoApiInfra
+runtime: dotnet
+description: A minimal Azure NextGen C# Pulumi program
