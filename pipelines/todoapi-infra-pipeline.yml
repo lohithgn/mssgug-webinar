@@ -54,10 +54,6 @@ stages:
           scriptLocation: inlineScript
           inlineScript: |
             az --version
-          
-      - pwsh: |
-          Write-Host ("##vso[task.setvariable variable=AZURE_STORAGE_CONTAINER]dev")
-        displayName: Set Azure Storage Container to dev
 
       - task: Pulumi@1
         displayName: pulumi preview
