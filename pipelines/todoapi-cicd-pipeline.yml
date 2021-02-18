@@ -55,10 +55,13 @@ stages:
   - job: DevDeployFuncApp
     displayName: Deploy to Dev
     steps:
+      - download: current
+        artifact: func-todoapi
+
       - task: AzureFunctionApp@1
         displayName: ToDoApi Function App Deploy
         inputs:
           azureSubscription: $(AZURE_SUBSCRIPTION)
           appType: functionApp
           appName: $(appName)-dev
-          package: $(System.ArtifactsDirectory)/**/*.zip
+          package: $(Pipeline.Workspace)/**/*.zip
