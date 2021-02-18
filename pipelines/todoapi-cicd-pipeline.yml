@@ -1,0 +1,60 @@
+name: ToDoApi-$(Date:yyyyMMdd)$(Rev:.r)
+
+trigger:
+  paths:
+    include:
+      - todo-api/src/**
+
+variables:
+- group: Contoso-ToDo-VarGroup
+- name: isMain
+  value: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+- name: buildConfiguration
+  value: Release
+- name: apiFolder
+  value: todo-api/src
+- name: appName
+  value: func-todoapi
+
+stages:
+
+- stage: BuildStage
+  displayName: Build ToDoApi Func App
+  jobs:
+  - job: BuildFuncApp
+    steps:
+    - task: UseDotNet@2
+      inputs:
+        version: '3.1.x'
+        packageType: runtime
+
+    - pwsh: dotnet clean $(apiFolder) --configuration $(buildConfiguration)
+      workingDirectory: $(Build.SourcesDirectory)
+      displayName: 'dotnet clean'
+
+    - pwsh: dotnet build $(apiFolder) --configuration $(buildConfiguration)
+      workingDirectory: $(Build.SourcesDirectory)
+      displayName: 'dotnet build'
+
+    - pwsh: dotnet publish $(apiFolder) -o $(Build.ArtifactStagingDirectory) --configuration $(buildConfiguration)
+      workingDirectory: $(Build.SourcesDirectory)
+      displayName: 'dotnet publish'
+
+    - publish: $(Build.ArtifactStagingDirectory)
+      artifact: func-todoapi
+
+- stage: DevDeployStage
+  displayName: DEV ENV
+  dependsOn: BuildStage
+  # condition: and(succeeded(), eq(variables.isMain, true))
+  jobs:
+  - job: DevDeployFuncApp
+    displayName: Deploy to Dev
+    steps:
+      - task: AzureFunctionApp@1
+        displayName: ToDoApi Function App Deploy
+        inputs:
+          azureSubscription: $(AZURE_SUBSCRIPTION)
+          appType: functionApp
+          appName: $(appName)-dev
+          package: $(System.ArtifactsDirectory)/**/*.zip
