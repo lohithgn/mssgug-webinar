@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Pulumi;
+using Pulumi.AzureNextGen.DocumentDB.Latest;
+using Pulumi.AzureNextGen.DocumentDB.Latest.Inputs;
 using Pulumi.AzureNextGen.Resources.Latest;
 using Pulumi.AzureNextGen.Storage.Latest;
 using Pulumi.AzureNextGen.Storage.Latest.Inputs;
@@ -18,6 +21,7 @@ class ToDoApiStack : Stack
         string funcStorageName = $"{ResourcePrefixes.Storage}{appName}{environment}001";
         string funcAppServicePlanName = $"{ResourcePrefixes.AppServicePlan}{appName}-{environment}";
         string funcAppName = $"{ResourcePrefixes.FunctionApp}{appName}-{environment}";
+        string cosmosDBAccountName = $"{ResourcePrefixes.Cosmos}{appName}-{environment}";
 
         //1. Create Resource Group
         var resourceGroup = new ResourceGroup(resourceGroupName, new ResourceGroupArgs
@@ -42,6 +46,65 @@ class ToDoApiStack : Stack
         // Export the primary key of the Storage Account
         this.PrimaryStorageKey = Output.Tuple(resourceGroup.Name, storageAccount.Name).Apply(names =>
             Output.CreateSecret(GetStorageAccountPrimaryKey(names.Item1, names.Item2)));
+
+        //3. Create Cosmos DB
+        var dbAccount = new DatabaseAccount(cosmosDBAccountName, new DatabaseAccountArgs
+        {
+            AccountName = cosmosDBAccountName,
+            ResourceGroupName = resourceGroup.Name,
+            Location = resourceGroup.Location,
+            Locations = new List<LocationArgs> { },
+            DatabaseAccountOfferType = DatabaseAccountOfferType.Standard, 
+            ApiProperties = new ApiPropertiesArgs
+            {
+                ServerVersion = "3.2"
+            },
+            Capabilities = new [] {
+                new Pulumi.AzureNextGen.DocumentDB.Latest.Inputs.CapabilityArgs
+                {
+                    Name = "EnableServerless"
+                }    
+            }
+        });
+
+        var dbName = "todos-db";
+        var cosmosSqlDB = new SqlResourceSqlDatabase(dbName,new SqlResourceSqlDatabaseArgs
+        {
+            AccountName = dbAccount.Name,
+            DatabaseName = dbName,
+            Options = new CreateUpdateOptionsArgs(),
+            Resource = new SqlDatabaseResourceArgs
+            {
+                Id = dbName
+            },
+            ResourceGroupName = resourceGroup.Name,
+            Location = resourceGroup.Location
+        });
+
+        var containerName = "todos-sql-Container";
+        var dbContainer = new SqlResourceSqlContainer(containerName, new SqlResourceSqlContainerArgs
+        {
+            AccountName = dbAccount.Name,
+            ContainerName = containerName,
+            DatabaseName = cosmosSqlDB.Name,
+            ResourceGroupName = resourceGroup.Name,
+            Location = resourceGroup.Location,
+            Options = new CreateUpdateOptionsArgs(),
+            Resource = new SqlContainerResourceArgs
+            {
+                Id = containerName
+            }
+        });
+
+        Console.WriteLine(dbAccount.DocumentEndpoint);
+        
+        var dbConnectionString = "dbAccount.DocumentEndpoint";
+        //var connectionstrings = ListDatabaseAccountConnectionStrings.InvokeAsync(new ListDatabaseAccountConnectionStringsArgs
+        //{
+        //    AccountName = cosmosDBAccountName,
+        //    ResourceGroupName = resourceGroupName
+        //}).GetAwaiter().GetResult(); 
+        // dbConnectionString = connectionstrings.ConnectionStrings[0].ConnectionString;
 
         //3. Create Consumption Plan for Func App
         var appServicePlan = new AppServicePlan(funcAppServicePlanName, new AppServicePlanArgs()
@@ -80,6 +143,11 @@ class ToDoApiStack : Stack
                     { 
                         Name = "AzureWebJobsDashboard", 
                         Value = Output.Format($"DefaultEndpointsProtocol=https;AccountName={storageAccount.Name};AccountKey={this.PrimaryStorageKey};EndpointSuffix=core.windows.net;")
+                    },
+                    new NameValuePairArgs
+                    { 
+                        Name = "ToDoDBConnection", 
+                        Value = dbConnectionString
                     },
                     new NameValuePairArgs{ Name = "Runtime", Value = "dotnet"},
                     new NameValuePairArgs{ Name = "FUNCTIONS_EXTENSION_VERSION", Value = "~3"}
