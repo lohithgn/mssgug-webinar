@@ -62,10 +62,6 @@ class ToDoApiStack : Stack
                 }    
             },
             DatabaseAccountOfferType = DatabaseAccountOfferType.Standard, 
-            ApiProperties = new ApiPropertiesArgs
-            {
-                ServerVersion = "3.2"
-            },
             Capabilities = new [] {
                 new Pulumi.AzureNextGen.DocumentDB.Latest.Inputs.CapabilityArgs
                 {
