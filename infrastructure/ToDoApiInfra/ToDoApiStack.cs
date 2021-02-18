@@ -18,16 +18,17 @@ class ToDoApiStack : Stack
         var environment = config.Require("env");
         string appName = "todoapi";
         string resourceGroupName = $"{ResourcePrefixes.ResourceGroup}{appName}-{environment}";
+        string location = "southeast asia";
         string funcStorageName = $"{ResourcePrefixes.Storage}{appName}{environment}001";
         string funcAppServicePlanName = $"{ResourcePrefixes.AppServicePlan}{appName}-{environment}";
         string funcAppName = $"{ResourcePrefixes.FunctionApp}{appName}-{environment}";
         string cosmosDBAccountName = $"{ResourcePrefixes.Cosmos}{appName}-{environment}";
-
+       
         //1. Create Resource Group
         var resourceGroup = new ResourceGroup(resourceGroupName, new ResourceGroupArgs
         {
             ResourceGroupName = resourceGroupName,
-            Location = "southeast asia"
+            Location = location
         });
 
         //2. Create Storage Account for Func App
@@ -53,7 +54,13 @@ class ToDoApiStack : Stack
             AccountName = cosmosDBAccountName,
             ResourceGroupName = resourceGroup.Name,
             Location = resourceGroup.Location,
-            Locations = {},
+            Locations = {
+                new LocationArgs
+                {
+                    LocationName = location,
+                    FailoverPriority = 0
+                }    
+            },
             DatabaseAccountOfferType = DatabaseAccountOfferType.Standard, 
             ApiProperties = new ApiPropertiesArgs
             {
