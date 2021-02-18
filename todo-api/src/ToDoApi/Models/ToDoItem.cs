@@ -9,22 +9,22 @@ using System;
 
 namespace Contoso.Api.Models
 {
-    /// <summary> The ToDo. </summary>
-    public partial class ToDo
+    /// <summary> The ToDoItem. </summary>
+    public partial class ToDoItem
     {
-        /// <summary> Initializes a new instance of ToDo. </summary>
-        public ToDo()
+        /// <summary> Initializes a new instance of ToDoItem. </summary>
+        public ToDoItem()
         {
         }
 
-        /// <summary> Initializes a new instance of ToDo. </summary>
+        /// <summary> Initializes a new instance of ToDoItem. </summary>
         /// <param name="id"> . </param>
         /// <param name="text"> . </param>
         /// <param name="isCompleted"> . </param>
         /// <param name="created"> . </param>
         /// <param name="completed"> . </param>
         /// <param name="user"> . </param>
-        internal ToDo(int? id, string text, bool? isCompleted, DateTimeOffset? created, DateTimeOffset? completed, string user)
+        internal ToDoItem(int? id, string text, bool? isCompleted, DateTimeOffset? created, DateTimeOffset? completed, string user)
         {
             Id = id;
             Text = text;
