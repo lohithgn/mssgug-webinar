@@ -53,7 +53,7 @@ class ToDoApiStack : Stack
             AccountName = cosmosDBAccountName,
             ResourceGroupName = resourceGroup.Name,
             Location = resourceGroup.Location,
-            Locations = new List<LocationArgs> { },
+            Locations = new List<LocationArgs> { new LocationArgs { LocationName = resourceGroup.Name  } },
             DatabaseAccountOfferType = DatabaseAccountOfferType.Standard, 
             ApiProperties = new ApiPropertiesArgs
             {
@@ -98,7 +98,7 @@ class ToDoApiStack : Stack
 
         Console.WriteLine(dbAccount.DocumentEndpoint);
         
-        var dbConnectionString = "dbAccount.DocumentEndpoint";
+        var dbConnectionString = dbAccount.DocumentEndpoint;
         //var connectionstrings = ListDatabaseAccountConnectionStrings.InvokeAsync(new ListDatabaseAccountConnectionStringsArgs
         //{
         //    AccountName = cosmosDBAccountName,
