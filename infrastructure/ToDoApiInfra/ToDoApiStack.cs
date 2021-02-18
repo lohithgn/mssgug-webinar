@@ -53,7 +53,7 @@ class ToDoApiStack : Stack
             AccountName = cosmosDBAccountName,
             ResourceGroupName = resourceGroup.Name,
             Location = resourceGroup.Location,
-            Locations = new List<LocationArgs> { new LocationArgs { LocationName = resourceGroup.Name  } },
+            Locations = {},
             DatabaseAccountOfferType = DatabaseAccountOfferType.Standard, 
             ApiProperties = new ApiPropertiesArgs
             {
