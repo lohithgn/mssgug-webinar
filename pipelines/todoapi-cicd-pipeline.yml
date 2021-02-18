@@ -36,9 +36,13 @@ stages:
       workingDirectory: $(Build.SourcesDirectory)
       displayName: 'dotnet build'
 
-    - pwsh: dotnet publish $(apiFolder) -o $(Build.ArtifactStagingDirectory) --configuration $(buildConfiguration)
+    - pwsh: dotnet publish $(apiFolder) -o .\artifacts --configuration $(buildConfiguration)
       workingDirectory: $(Build.SourcesDirectory)
       displayName: 'dotnet publish'
+
+    - pwsh: Compress-Archive -Path .\artifacts\* -DestinationPath $(Build.ArtifactStagingDirectory)\func-todoapi.zip  
+      workingDirectory: $(Build.SourcesDirectory)
+      displayName: 'zip artifacts'
 
     - publish: $(Build.ArtifactStagingDirectory)
       artifact: func-todoapi
