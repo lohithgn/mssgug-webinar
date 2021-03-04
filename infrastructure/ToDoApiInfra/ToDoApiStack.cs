@@ -75,7 +75,7 @@ class ToDoApiStack : Stack
                         Value = Output.Format($"{this.CosmosConnectionString}")
                     },
                     new NameValuePairArgs{ Name = "Runtime", Value = "dotnet"},
-                    new NameValuePairArgs{ Name = "FUNCTIONS_EXTENSION_VERSION", Value = "~3"}
+                    new NameValuePairArgs{ Name = "FUNCTIONS_EXTENSION_VERSION", Value = "~3"},
                     new NameValuePairArgs{Name = "ToDoDBName",Value = "todos-db"},
                     new NameValuePairArgs{Name = "ToDoCollection",Value = "todos-sql-Container"},
                 },
