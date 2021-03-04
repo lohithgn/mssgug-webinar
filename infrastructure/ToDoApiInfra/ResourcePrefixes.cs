@@ -4,4 +4,5 @@ public class ResourcePrefixes
     public const string AppServicePlan = "asp-";
     public const string Storage = "st";
     public const string FunctionApp = "func-";
+    public const string Cosmos = "cosmos-";
 }
