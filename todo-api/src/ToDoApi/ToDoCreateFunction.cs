@@ -1,22 +1,21 @@
-﻿using Contoso.Api.Models;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Contoso.Api.Models;
+using Contoso.ToDo.Api.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Contoso.ToDo.Api
 {
     public class ToDoCreateFunction
     {
-        private readonly ILogger<ToDoCreateFunction> _logger;
+        private readonly IToDoService _toDoService;
 
-        public ToDoCreateFunction(ILogger<ToDoCreateFunction> logger)
+        public ToDoCreateFunction(IToDoService toDoService)
         {
-            _logger = logger;
+            _toDoService = toDoService;
         }
 
         /// <summary> Add a new ToDoItem. </summary>
@@ -25,16 +24,21 @@ namespace Contoso.ToDo.Api
         /// <param name="cancellationToken"> The cancellation token provided on Function shutdown. </param>
         [FunctionName(nameof(ToDoCreateFunction))]
         public async Task<IActionResult> CreateAsync(HttpRequest req, 
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "todos")] ToDoItem body = null, 
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "todos")] ToDoItem newToDo = null, 
             CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("HTTP trigger function processed a request.");
+            if(string.IsNullOrEmpty(newToDo.User)) 
+            {
+                return new BadRequestObjectResult("No payload provided.");
+            }
+            if(string.IsNullOrEmpty(newToDo.Text))
+            {
+                newToDo.Text = "New Task";
+            }
 
-            // TODO: Handle Documented Responses.
-            // Spec Defines: HTTP 201
-            // Spec Defines: HTTP 405
+            await _toDoService.CreateTodoAsync(newToDo);
 
-            throw new NotImplementedException();
+            return new CreatedResult($"/api/todos/{newToDo.Id}",newToDo);
         }
     }
 }

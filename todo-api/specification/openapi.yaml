@@ -12,7 +12,7 @@ components:
       type: object
       properties:
         Id:
-          type: integer
+          type: string
         Text:
           type: string
         IsCompleted:
@@ -66,7 +66,7 @@ paths:
         '405':
           description: Invalid input
           content: {}
-      x-codegen-request-body-name: body
+      x-codegen-request-body-name: todo
   '/todos/{todoId}':
     get:
       summary: Get a ToDo.
@@ -80,8 +80,7 @@ paths:
           description: ID of ToDo to return
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
       responses:
         '200':
           description: Successful operation.
@@ -107,8 +106,7 @@ paths:
           description: ID of ToDo to return
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
       requestBody:
         description: ToDo object that needs to be updated.
         content:
@@ -136,8 +134,7 @@ paths:
           description: ID of ToDo to delete
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
       responses:
         '200':
           description: OK

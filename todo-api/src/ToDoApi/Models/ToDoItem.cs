@@ -24,7 +24,7 @@ namespace Contoso.Api.Models
         /// <param name="created"> . </param>
         /// <param name="completed"> . </param>
         /// <param name="user"> . </param>
-        internal ToDoItem(int? id, string text, bool? isCompleted, DateTimeOffset? created, DateTimeOffset? completed, string user)
+        internal ToDoItem(string id, string text, bool? isCompleted, DateTimeOffset? created, DateTimeOffset? completed, string user)
         {
             Id = id;
             Text = text;
@@ -34,10 +34,10 @@ namespace Contoso.Api.Models
             User = user;
         }
 
-        public int? Id { get; set; }
+        public string Id { get; set; }
         public string Text { get; set; }
-        public bool? IsCompleted { get; set; }
-        public DateTimeOffset? Created { get; set; }
+        public bool? IsCompleted { get; set; } = false;
+        public DateTimeOffset? Created { get; set; } = DateTime.UtcNow;
         public DateTimeOffset? Completed { get; set; }
         public string User { get; set; }
     }

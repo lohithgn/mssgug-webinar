@@ -1,21 +1,21 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Contoso.ToDo.Api.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Contoso.ToDo.Api
 {
     public class ToDoDeleteFunction
     {
-        private readonly ILogger<ToDoDeleteFunction> _logger;
+        private readonly IToDoService _service;
 
-        public ToDoDeleteFunction(ILogger<ToDoDeleteFunction> logger)
+        public ToDoDeleteFunction(IToDoService service)
         {
-            _logger = logger;
+            _service = service;
         }
 
         /// <summary> Delete an existing ToDoItem. </summary>
@@ -25,17 +25,21 @@ namespace Contoso.ToDo.Api
         [FunctionName(nameof(ToDoDeleteFunction))]
         public async Task<IActionResult> DeleteAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "todos/{todoId}")] HttpRequest req, 
-            long todoId, 
+            string todoId, 
             CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("HTTP trigger function processed a request.");
 
-            // TODO: Handle Documented Responses.
-            // Spec Defines: HTTP 200
-            // Spec Defines: HTTP 400
-            // Spec Defines: HTTP 404
+            if(string.IsNullOrEmpty(todoId)) return new BadRequestObjectResult("ToDo identifier is required.");
 
-            throw new NotImplementedException();
+            try
+            {
+                await _service.DeleteTodoAsync(todoId);
+                return new OkResult();
+            }
+            catch(InvalidOperationException)
+            {
+                return new NotFoundObjectResult($"ToDo with identifier:{todoId} not found");
+            }
         }
     }
 }

@@ -1,9 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup><TargetFramework>netcoreapp3.1</TargetFramework>
         <AzureFunctionsVersion>v3</AzureFunctionsVersion>
+        <UserSecretsId>2ca6e75f-81ee-4402-a8de-9c379a62ee90</UserSecretsId>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.3"/>
+        <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Cosmos" Version="5.0.3" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
+        <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.3" />
     </ItemGroup>
     <ItemGroup>
         <None Update="host.json">

@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Contoso.ToDo.Api.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
@@ -11,11 +13,13 @@ namespace Contoso.ToDo.Api
 {
     public class ToDoListingFunction
     {
-        private readonly ILogger<ToDoListingFunction> _logger;
+        private readonly IConfiguration _configuration;
+        private readonly IToDoService _toDoService;
 
-        public ToDoListingFunction(ILogger<ToDoListingFunction> logger)
+        public ToDoListingFunction(IConfiguration configuration, IToDoService toDoService)
         {
-            _logger = logger;
+            _configuration = configuration;
+            _toDoService = toDoService;
         }
 
         /// <summary> Get all ToDos for a user. </summary>
@@ -23,15 +27,11 @@ namespace Contoso.ToDo.Api
         /// <param name="cancellationToken"> The cancellation token provided on Function shutdown. </param>
         [FunctionName(nameof(ToDoListingFunction))]
         public async Task<IActionResult> ListAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "todos")] HttpRequest req, 
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{user}/todos")] HttpRequest req, 
+            string user,
             CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("HTTP trigger function processed a request.");
-
-            // TODO: Handle Documented Responses.
-            // Spec Defines: HTTP 200
-
-            throw new NotImplementedException();
+            return new OkObjectResult(await _toDoService.ListTodosAsync(user));
         }
     }
 }

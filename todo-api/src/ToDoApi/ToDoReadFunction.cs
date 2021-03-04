@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Contoso.ToDo.Api.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -11,11 +12,11 @@ namespace Contoso.ToDo.Api
 {
     public class ToDoReadFunction
     {
-        private readonly ILogger<ToDoReadFunction> _logger;
+        private readonly IToDoService _service;
 
-        public ToDoReadFunction(ILogger<ToDoReadFunction> logger)
+        public ToDoReadFunction(IToDoService service)
         {
-            _logger = logger;
+            _service = service;
         }
 
         /// <summary> Get an existing ToDoItem. </summary>
@@ -25,17 +26,20 @@ namespace Contoso.ToDo.Api
         [FunctionName(nameof(ToDoReadFunction))]
         public async Task<IActionResult> ReadAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "todos/{todoId}")] HttpRequest req, 
-            long todoId, 
+            string todoId, 
             CancellationToken cancellationToken = default)
         {
-            _logger.LogInformation("HTTP trigger function processed a request.");
+            if(string.IsNullOrEmpty(todoId)) return new BadRequestObjectResult("ToDo identifier is required.");
 
-            // TODO: Handle Documented Responses.
-            // Spec Defines: HTTP 200
-            // Spec Defines: HTTP 400
-            // Spec Defines: HTTP 404
-
-            throw new NotImplementedException();
+            try
+            {
+                var todo = await _service.ReadTodoAsync(todoId);
+                return new OkObjectResult(todo);
+            }
+            catch(InvalidOperationException)
+            {
+                return new NotFoundObjectResult($"ToDo with identifier:{todoId} not found");
+            }
         }
     }
 }
